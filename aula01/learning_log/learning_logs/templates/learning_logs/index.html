@@ -6,7 +6,10 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Learning_Log</h1>
+    {% extends "learning_logs/base.html"%}
+
+    {% block content %}
     <p>Essa aplicação te auxilia a organizar seus estudos</p>
+    {% endblock content %}
 </body>
 </html>
