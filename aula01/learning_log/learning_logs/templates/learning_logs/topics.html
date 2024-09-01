@@ -9,8 +9,9 @@
     {% extends "learning_logs/base.html"%}
 
     {% block content %}
-        Tópicos:
+        <H3>Tópico: {{topic}}</H3>
 
+        <p>Anotações:</p>
         <ul>
             {% for topic in topics %}
                 <li>
