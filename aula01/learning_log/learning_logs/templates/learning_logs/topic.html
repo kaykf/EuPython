@@ -10,9 +10,13 @@
 
     {% block content %}
 
-        <h3>Tópico: {{ topic }}</h3>
+        <p>Tópico: {{ topic }}</p>
 
         <p>Entradas: </p>
+
+        <p>
+            <a href="{% url 'new_entry' topic.id %}">Adicione uma nova anotação</a>
+        </p>
 
         <ul>
             {% for entry in entries %}
@@ -20,6 +24,9 @@
             <li>
                 <p>{{ entry.data_added | date:'M d, Y H:i'}}</p>
                 <p>{{ entry.text | linebreaks }}</p>
+                <p>
+                    <a href="{% url 'edit_entry' entry.id %}">Edita anotação</a>
+                </p>
             </li>
 
             {% empty %}
