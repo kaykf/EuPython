@@ -1,7 +1,7 @@
 from django.shortcuts import render # type: ignore
 from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
-from django.http import HttpResponseRedirect # type: ignore
+from django.http import HttpResponseRedirect, Http404 # type: ignore
 from django.urls import reverse # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
 
@@ -12,7 +12,7 @@ def index(request):
 @login_required
 def topics(request):
     """Mostra os assuntos"""
-    topics = Topic.objects.order_by('date_added')
+    topics = Topic.objects.filter(owner = request.user).order_by('date_added')
     context = {'topics': topics}
     return render(request, 'learning_logs/topics.html', context)
 
@@ -20,6 +20,11 @@ def topics(request):
 def topic(request, topic_id):
     """Mostra um único assunto e todas as suas entradas."""
     topic = Topic.objects.get(id = topic_id)
+
+    #Garante que o assunto pertence ao usuário atual
+    if topic.owner != request.user:
+        raise Http404
+
     entries = topic.entry_set.order_by('-date_added')
     context = {'topic': topic, 'entries': entries}
     return render(request, 'learning_logs/topic.html', context)
@@ -34,7 +39,9 @@ def new_topic(request):
         #Dados de post submetidos processa os dados
         form = TopicForm(request.POST)
         if form.is_valid():
-            form.save()
+            new_topic = form.save(commit=False)
+            new_topic.owner = request.user
+            new_topic.save()
             #return render para voltar para a mesma pag
             return HttpResponseRedirect(reverse('topics'))
     context = {'form': form}
@@ -44,6 +51,11 @@ def new_topic(request):
 def new_entry(request, topic_id):
     """Acrescenta uma nova entrada para um assunto em particular."""
     topic = Topic.objects.get(id= topic_id)
+
+    #Garante que o assunto pertence ao usuário atual
+    if topic.owner != request.user:
+        raise Http404
+    
 
     if request.method != 'POST':
         #nenhum dado submetido cria um formulario em branco
@@ -66,6 +78,10 @@ def edit_entry(request, entry_id):
     entry = Entry.objects.get(id=entry_id)
     topic = entry.topic
 
+    #Garante que o assunto pertence ao usuário atual
+    if topic.owner != request.user:
+        raise Http404
+
     if request.method != 'POST':
         #Requisição inicial; preenche preveamente o formulario com a entrada atual
         form = EntryForm(instance = entry)
@@ -79,3 +95,4 @@ def edit_entry(request, entry_id):
     
     context = {'entry': entry, 'topic': topic, 'form': form}
     return render(request,'learning_logs/edit_entry.html', context)
+
