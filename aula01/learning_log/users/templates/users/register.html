@@ -3,18 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Learning Log</title>
 </head>
 <body>
     {% extends "learning_logs/base.html" %}
+    {% load bootstrap3 %}
+
+    {% block header%}
+    <h1>Criar conta</h1>
+
+    {% endblock header%}
 
     {% block content %}
+        {% if form.errors %}
+            <p class="aviso-erro" style="color: red">
+                *O nome de usuário não deve conter caracteres especiais.
+            </p>
+            <p class="aviso-erro" style="color: red;">
+                *A senha deve ter mais de 8 dígitos, letras, números, caracteres especiais e não pode conter o nome de usuário.
+            </p>
+            <p class="aviso-erro" style="color: red;">
+                *As senhas digitadas precisam estar iguais.
+            </p>
+        {% endif %}
 
-    <form action="{% url 'register' %}" method="post">
+
+    <form action="{% url 'register' %}" method="post" class="ul-none" class="form">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% bootstrap_form form %}
 
-        <button name="submit">Registrar</button>
+        {% buttons %}
+        <button name="submit" class="btn btn-primary">Registrar</button>
+        {% endbuttons %}
         <input type="hidden" name="next" value="{% url 'index' %}">
     </form>
 

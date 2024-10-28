@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Learning Log</title>
 </head>
 <body>
     {% extends "learning_logs/base.html" %}
+    {% load bootstrap3 %}
+
+    {% block header %}
+
+    <h1><a href="{% url 'topic' topic.id %}">{{ topic }}</a></h1>
+
+    {% endblock header%}
 
     {% block content %}
 
-    <p><a href="{% url 'topic' topic.id %}">{{ topic }}</a></p>
+    <h3>Editar Anotação:</h3>
 
-    <p>Editar Anotação:</p>
-
-    <form action="{% url 'edit_entry' entry.id %}" method="post">
+    <form action="{% url 'edit_entry' entry.id %}" method="post" class="form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button name="submit">Salvar</button>
+        {% bootstrap_form form %}
+        {% buttons %}
+        <button name="submit" class="btn btn-primary">Salvar</button>
+        {% endbuttons%}
     </form>
 
     {% endblock content %}
